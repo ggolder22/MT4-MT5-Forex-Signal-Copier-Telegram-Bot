@@ -100,11 +100,11 @@ def ParseSignal(signal: str) -> dict:
         trade['TP'].append(float(signal[4].split()[-1]))
     
     # adds risk factor to trade
-    #trade['RiskFactor'] = RISK_FACTOR
-    if(len(signal) > 5):
-        trade ['RiskFactor'] = [float((signal[5].split())[-1])]
-    else:
-        trade ['RiskFactor'] = RISK_FACTOR
+    trade['RiskFactor'] = RISK_FACTOR
+    #if(len(signal) > 5):
+    #    trade ['RiskFactor'] = [float((signal[5].split())[-1])]
+    #else:
+    #    trade ['RiskFactor'] = RISK_FACTOR
 
     return trade
 
