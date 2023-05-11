@@ -302,7 +302,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 
                 # prints success message to console
                 logger.info('\nTrade entered successfully!')
-                logger.info(GetTradeInformation(id))
+                logger.info('history deals by ticket:', await connection.get_deals_by_ticket('1234567'))
                 logger.info('Result Code: {}\n'.format(result['stringCode']))
             
             except Exception as error:
