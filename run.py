@@ -102,7 +102,7 @@ def ParseSignal(signal: str) -> dict:
     # adds risk factor to trade
     #trade['RiskFactor'] = RISK_FACTOR
     if(len(signal) > 5):
-        trade['RiskFactor'] = [float((signal[5].split())[-1])]
+        trade['RiskFactor'] = float((signal[5].split())[-1])
     else:
         trade['RiskFactor'] = RISK_FACTOR
 
@@ -135,6 +135,7 @@ def GetTradeInformation(update: Update, trade: dict, balance: float) -> None:
 
     # calculates the position size using stop loss and RISK FACTOR
     trade['PositionSize'] = math.floor(((balance * trade['RiskFactor']) / stopLossPips) / 10 * 100) / 100
+    
 
     # calculates the take profit(s) in pips
     takeProfitPips = []
