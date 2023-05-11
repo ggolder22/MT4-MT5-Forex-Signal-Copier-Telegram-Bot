@@ -116,7 +116,7 @@ def ParseSignal(signal: str) -> dict:
     #    trade['RiskFactor'] = float((signal[5].split())[-1])
     #else:
     #    trade['RiskFactor'] = RISK_FACTOR
-    trade['PositionSize'] = float((signal[1].split())[-1])*((signal[4].split())[-1])
+    trade['PositionSize'] = float((signal[1].split())[-1])*float((signal[4].split())[-1])
 
     return trade
 
