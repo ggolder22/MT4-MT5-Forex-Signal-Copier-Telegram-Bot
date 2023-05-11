@@ -302,6 +302,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 
                 # prints success message to console
                 logger.info('\nTrade entered successfully!')
+                logger.info(GetTradeInformation(id))
                 logger.info('Result Code: {}\n'.format(result['stringCode']))
             
             except Exception as error:
@@ -311,7 +312,9 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
     except Exception as error:
         logger.error(f'Error: {error}')
         update.effective_message.reply_text(f"There was an issue with the connection 😕\n\nError Message:\n{error}")
-    
+
+  
+
     return
 
 
