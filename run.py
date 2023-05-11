@@ -93,17 +93,22 @@ def ParseSignal(signal: str) -> dict:
         trade['Entry'] = float((signal[2].split())[-1])
     
     trade['StopLoss'] = float((signal[3].split())[-1])
-    trade['TP'] = [float((signal[4].split())[-1])]
+    trade['TP'] = [float((signal[4].split())[-2])]
+    trade["amount"] = [float((signal[4].split())[-1])]
 
     # checks if there's a fourth line and parses it for TP2
     if(len(signal) > 5):
-        trade['TP'].append(float(signal[5].split()[-1]))
+        trade['TP'].append(float(signal[5].split()[-2]))
+        trade["amount"].append(float((signal[5].split())[-1]))
     if(len(signal) > 6):
-        trade['TP'].append(float(signal[6].split()[-1]))
+        trade['TP'].append(float(signal[6].split()[-2]))
+        trade["amount"].append(float((signal[6].split())[-1]))
     if(len(signal) > 7):
-        trade['TP'].append(float(signal[7].split()[-1]))
+        trade['TP'].append(float(signal[7].split()[-2]))
+        trade["amount"].append(float((signal[7].split())[-1]))
     if(len(signal) > 8):
-        trade['TP'].append(float(signal[8].split()[-1]))
+        trade['TP'].append(float(signal[8].split()[-2]))
+        trade["amount"].append(float((signal[8].split())[-1]))
     
     # adds risk factor to trade
     trade['RiskFactor'] = RISK_FACTOR
@@ -270,7 +275,8 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 # executes buy market execution order
                 if(trade['OrderType'] == 'Buy'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
+                        #result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
+                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] * trade["amount"], trade['StopLoss'], takeProfit)
 
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
