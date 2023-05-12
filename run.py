@@ -4,29 +4,24 @@ import logging
 import math
 import os
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 from metaapi_cloud_sdk import MetaApi
 from prettytable import PrettyTable
 from telegram import ParseMode, Update
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater, ConversationHandler, CallbackContext
 
-# # MetaAPI Credentials
-# API_KEY = os.environ.get("API_KEY")
-# ACCOUNT_ID = os.environ.get("ACCOUNT_ID")
+# MetaAPI Credentials
+API_KEY = os.environ.get("API_KEY")
+ACCOUNT_ID = os.environ.get("ACCOUNT_ID")
 
 # # Telegram Credentials
-# TOKEN = os.environ.get("TOKEN")
-# #TELEGRAM_USER = os.environ.get("TELEGRAM_USER")
+TOKEN = os.environ.get("TOKEN")
+TELEGRAM_USER = os.environ.get("TELEGRAM_USER")
 
 # # Heroku Credentials
-# APP_URL = os.environ.get("APP_URL")
+APP_URL = os.environ.get("APP_URL")
 
 # # Port number for Telegram bot web hook
-# PORT = int(os.environ.get('PORT', '8443'))
+PORT = int(os.environ.get('PORT', '8443'))
 
 
 # # Enables logging
@@ -580,22 +575,6 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, Updater, Conve
 
 
 #-----------------------------------
-
-
-# MetaAPI Credentials
-API_KEY = os.environ.get("API_KEY")
-ACCOUNT_ID = os.environ.get("ACCOUNT_ID")
-
-# Telegram Credentials
-TOKEN = os.environ.get("TOKEN")
-TELEGRAM_USER = os.environ.get("TELEGRAM_USER")
-
-# Heroku Credentials
-APP_URL = os.environ.get("APP_URL")
-
-# Port number for Telegram bot web hook
-PORT = int(os.environ.get('PORT', '8443'))
-
 
 # Enables logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
