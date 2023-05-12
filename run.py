@@ -54,6 +54,7 @@ def ParseSignal(signal: str) -> dict:
     signal = [line.rstrip() for line in signal]
 
     trade = {}
+    amount = {}
 
     # determines the order type of the trade
     if('Buy Limit'.lower() in signal[0].lower()):
@@ -94,21 +95,21 @@ def ParseSignal(signal: str) -> dict:
     
     trade['StopLoss'] = float((signal[3].split())[-1])
     trade['TP'] = [float((signal[4].split())[-2])]
-    trade['Amount'] = [float((signal[4].split())[-1])]
+    trade['PositionSize'] = [float((signal[4].split())[-1])]
 
     # checks if there's a fourth line and parses it for TP2
     if(len(signal) > 5):
         trade['TP'].append(float(signal[5].split()[-2]))
-        trade['Amount'].append(float((signal[5].split())[-1]))
+        trade['PositionSize'].append(float((signal[5].split())[-1]))
     if(len(signal) > 6):
         trade['TP'].append(float(signal[6].split()[-2]))
-        trade['Amount'].append(float((signal[6].split())[-1]))
+        trade['PositionSize'].append(float((signal[6].split())[-1]))
     if(len(signal) > 7):
         trade['TP'].append(float(signal[7].split()[-2]))
-        trade['Amount'].append(float((signal[7].split())[-1]))
+        trade['PositionSize'].append(float((signal[7].split())[-1]))
     if(len(signal) > 8):
         trade['TP'].append(float(signal[8].split()[-2]))
-        trade['Amount'].append(float((signal[8].split())[-1]))
+        trade['PositionSize'].append(float((signal[8].split())[-1]))
     
     # adds risk factor to trade
     trade['RiskFactor'] = RISK_FACTOR
@@ -116,9 +117,11 @@ def ParseSignal(signal: str) -> dict:
     #    trade['RiskFactor'] = float((signal[5].split())[-1])
     #else:
     #    trade['RiskFactor'] = RISK_FACTOR
-    trade['PositionSize'] = float((signal[1].split())[-1])*float((signal[4].split())[-1])
+    #trade['PositionSize'] = float((signal[1].split())[-1])*float((signal[4].split())[-1])
 
     return trade
+    
+
 
 def GetTradeInformation(update: Update, trade: dict, balance: float) -> None:
     """Calculates information from given trade including stop loss and take profit in pips, posiition size, and potential loss/profit.
@@ -276,8 +279,8 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 if(trade['OrderType'] == 'Buy'):
                     for takeProfit in trade['TP']:
                         #result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / trade['Amount'], trade['StopLoss'], takeProfit)
-
+                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] * amount['Amount'], trade['StopLoss'], takeProfit)
+                        
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
                     for takeProfit in trade['TP']:
