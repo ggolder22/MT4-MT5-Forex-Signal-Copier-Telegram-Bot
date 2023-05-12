@@ -312,7 +312,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 update.effective_message.reply_text("Trade entered successfully! 💰")
                 
                 # prints success message to console
-                logger.info('\nTrade entered successfully! \nhistory deals by ticket:', await connection.get_deals_by_ticket('1234567'))
+                logger.info('\nTrade entered successfully! \nhistory deals by ticket:', await connection.get_history_orders_by_ticket('1234567'))
                 
                 logger.info('Result Code: {}\n'.format(result['stringCode']))
             
