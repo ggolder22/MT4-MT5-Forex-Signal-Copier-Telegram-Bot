@@ -54,7 +54,7 @@ def ParseSignal(signal: str) -> dict:
     signal = [line.rstrip() for line in signal]
 
     trade = {}
-    amount = {}
+    lot= 0.0
 
     # determines the order type of the trade
     if('Buy Limit'.lower() in signal[0].lower()):
@@ -89,6 +89,7 @@ def ParseSignal(signal: str) -> dict:
     # checks wheter or not to convert entry to float because of market exectution option ("NOW")
     if(trade['OrderType'] == 'Buy' or trade['OrderType'] == 'Sell'):
         trade['Entry'] = (signal[2].split())[-1]
+        lot == float((signal[1].split())[-1])
     
     else:
         trade['Entry'] = float((signal[2].split())[-1])
@@ -178,40 +179,40 @@ def CreateTable(trade: dict, balance: float, stopLossPips: int, takeProfitPips: 
     """
 
     # creates prettytable object
-    table = PrettyTable()
+    # table = PrettyTable()
     
-    table.title = "Trade Information"
-    table.field_names = ["Key", "Value"]
-    table.align["Key"] = "l"  
-    table.align["Value"] = "l" 
+    # table.title = "Trade Information"
+    # table.field_names = ["Key", "Value"]
+    # table.align["Key"] = "l"  
+    # table.align["Value"] = "l" 
 
-    table.add_row([trade["OrderType"] , trade["Symbol"]])
-    table.add_row(['Entry\n', trade['Entry']])
+    # table.add_row([trade["OrderType"] , trade["Symbol"]])
+    # table.add_row(['Entry\n', trade['Entry']])
 
-    table.add_row(['Stop Loss', '{} pips'.format(stopLossPips)])
+    # table.add_row(['Stop Loss', '{} pips'.format(stopLossPips)])
 
-    for count, takeProfit in enumerate(takeProfitPips):
-        table.add_row([f'TP {count + 1}', f'{takeProfit} pips'])
+    # for count, takeProfit in enumerate(takeProfitPips):
+    #     table.add_row([f'TP {count + 1}', f'{takeProfit} pips'])
 
-    table.add_row(['\nRisk Factor', '\n{:,.0f} %'.format(trade['RiskFactor'] * 100)])
-    table.add_row(['Position Size', trade['PositionSize']])
+    # table.add_row(['\nRisk Factor', '\n{:,.0f} %'.format(trade['RiskFactor'] * 100)])
+    # table.add_row(['Position Size', trade['PositionSize']])
     
-    table.add_row(['\nCurrent Balance', '\n$ {:,.2f}'.format(balance)])
-    table.add_row(['Potential Loss', '$ {:,.2f}'.format(round((trade['PositionSize'] * 10) * stopLossPips, 2))])
+    # table.add_row(['\nCurrent Balance', '\n$ {:,.2f}'.format(balance)])
+    # table.add_row(['Potential Loss', '$ {:,.2f}'.format(round((trade['PositionSize'] * 10) * stopLossPips, 2))])
 
-    # total potential profit from trade
-    totalProfit = 0
+    # # total potential profit from trade
+    # totalProfit = 0
 
-    for count, takeProfit in enumerate(takeProfitPips):
-        profit = round((trade['PositionSize'] * 10 * (1 / len(takeProfitPips))) * takeProfit, 2)
-        table.add_row([f'TP {count + 1} Profit', '$ {:,.2f}'.format(profit)])
+    # for count, takeProfit in enumerate(takeProfitPips):
+    #     profit = round((trade['PositionSize'] * 10 * (1 / len(takeProfitPips))) * takeProfit, 2)
+    #     table.add_row([f'TP {count + 1} Profit', '$ {:,.2f}'.format(profit)])
         
-        # sums potential profit from each take profit target
-        totalProfit += profit
+    #     # sums potential profit from each take profit target
+    #     totalProfit += profit
 
-    table.add_row(['\nTotal Profit', '\n$ {:,.2f}'.format(totalProfit)])
+    # table.add_row(['\nTotal Profit', '\n$ {:,.2f}'.format(totalProfit)])
 
-    return table
+    # return table
 
 async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
     """Attempts connection to MetaAPI and MetaTrader to place trade.
@@ -279,7 +280,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 if(trade['OrderType'] == 'Buy'):
                     for takeProfit in trade['TP']:
                         #result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] * amount['Amount'], trade['StopLoss'], takeProfit)
+                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'], trade['StopLoss'], takeProfit)
                         
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
