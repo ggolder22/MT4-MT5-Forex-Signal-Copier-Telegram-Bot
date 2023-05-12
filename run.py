@@ -309,7 +309,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                         result = await connection.create_stop_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
                 
                 # sends success message to user
-                update.effective_message.reply_text("Trade entered successfully! 💰")
+                update.effective_message.reply_text("Trade entered successfully! 💰\nhistory deals by ticket:", await connection.get_history_orders_by_ticket('1234567'))
                 
                 # prints success message to console
                 logger.info('\nTrade entered successfully! \nhistory deals by ticket:', await connection.get_history_orders_by_ticket('1234567'))
