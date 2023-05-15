@@ -97,32 +97,36 @@ def ParseSignal(signal: str) -> dict:
     trade['StopLoss'] = float((signal[3].split())[-1])
     trade['TP'] = [float((signal[4].split())[-2])]
     trade['SIZE'] = [float((signal[4].split())[-1])]
-    #trade['PositionSize'] = [float((signal[4].split())[-1])]
-
-    # checks if there's a fourth line and parses it for TP2
+    
+    # checks if there's a five line and parses it for TP2
     if(len(signal) > 5):
         trade['TP'].append(float(signal[5].split()[-2]))
         trade['SIZE'].append(float((signal[5].split())[-1]))
-                
+    
+    # checks if there's a six line and parses it for TP3            
     if(len(signal) > 6):
         trade['TP'].append(float(signal[6].split()[-2]))
         trade['SIZE'].append(float((signal[6].split())[-1]))
-       
+
+    # checks if there's a seven line and parses it for TP4   
     if(len(signal) > 7):
         trade['TP'].append(float(signal[7].split()[-2]))
         trade['SIZE'].append(float((signal[7].split())[-1]))
-
+    
+    # checks if there's a eight line and parses it for TP5
     if(len(signal) > 8):
         trade['TP'].append(float(signal[8].split()[-2]))
         trade['SIZE'].append(float((signal[8].split())[-1]))
     
+    # checks if there's a eight line and parses it for TP6
+    if(len(signal) > 9):
+        trade['TP'].append(float(signal[9].split()[-2]))
+        trade['SIZE'].append(float((signal[9].split())[-1]))
+
     # adds risk factor to trade
-    trade['RiskFactor'] = RISK_FACTOR
-    #if(len(signal) > 5):
-    #    trade['RiskFactor'] = float((signal[5].split())[-1])
-    #else:
-    #    trade['RiskFactor'] = RISK_FACTOR
-    #trade['PositionSize'] = float((signal[1].split())[-1])*float((signal[4].split())[-1])
+    #trade['RiskFactor'] = RISK_FACTOR
+    # modifico el RiskFactor para introducirlo por mensaje desde la señal
+    trade['RiskFactor'] = float((signal[1].split())[-1])
 
     return trade
     
@@ -282,45 +286,33 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
             try:
                 # executes buy market execution order
                 if(trade['OrderType'] == 'Buy'):
-
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['SIZE'][i], trade['StopLoss'], takeProfit)
-
-                    # i=0
-
-
-                    # for takeProfit in trade['TP']:
-                    #     #result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
-                        
-                    #     result = await connection.create_market_buy_order(trade['Symbol'],  0.5, trade['StopLoss'], takeProfit)
-                    #     i=i+1
-
-
-                        
+                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] * trade['SIZE'][i], trade['StopLoss'], takeProfit)
+       
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
-                    for takeProfit in trade['TP']:
-                        result = await connection.create_limit_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                    for i, takeProfit in enumerate(trade['TP']):
+                        result = await connection.create_limit_buy_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
 
                 # executes buy stop order
                 elif(trade['OrderType'] == 'Buy Stop'):
-                    for takeProfit in trade['TP']:
-                        result = await connection.create_stop_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                    for i, takeProfit in enumerate(trade['TP']):
+                        result = await connection.create_stop_buy_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
 
                 # executes sell market execution order
                 elif(trade['OrderType'] == 'Sell'):
-                    for takeProfit in trade['TP']:
-                        result = await connection.create_market_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
+                    for i, takeProfit in enumerate(trade['TP']):
+                        result = await connection.create_market_sell_order(trade['Symbol'], trade['SIZE'][i], trade['StopLoss'], takeProfit)
 
                 # executes sell limit order
                 elif(trade['OrderType'] == 'Sell Limit'):
-                    for takeProfit in trade['TP']:
-                        result = await connection.create_limit_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                    for i, takeProfit in enumerate(trade['TP']):
+                        result = await connection.create_limit_sell_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
 
                 # executes sell stop order
                 elif(trade['OrderType'] == 'Sell Stop'):
-                    for takeProfit in trade['TP']:
-                        result = await connection.create_stop_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                    for i, takeProfit in enumerate(trade['TP']):
+                        result = await connection.create_stop_sell_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
