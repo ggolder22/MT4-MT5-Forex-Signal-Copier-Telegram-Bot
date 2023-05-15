@@ -285,7 +285,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                     for takeProfit in trade['TP']:
                         #result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
                         #result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['SIZE'], trade['StopLoss'], takeProfit)
+                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / trade['SIZE'], trade['StopLoss'], takeProfit)
                         
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
@@ -313,10 +313,10 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                         result = await connection.create_stop_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
                 
                 # sends success message to user
-                update.effective_message.reply_text("Trade entered successfully! 💰\nhistory deals by ticket:", await connection.get_history_orders_by_ticket('1234567'))
+                update.effective_message.reply_text("Trade entered successfully! 💰")
                 
                 # prints success message to console
-                logger.info('\nTrade entered successfully! \nhistory deals by ticket:', await connection.get_history_orders_by_ticket('1234567'))
+                logger.info('Trade entered successfully! {}\n' .format(trade['SIZE']))
                 
                 logger.info('Result Code: {}\n'.format(result['stringCode']))
             
