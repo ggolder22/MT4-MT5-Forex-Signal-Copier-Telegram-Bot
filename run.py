@@ -289,36 +289,36 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                         #result = await connection.create_market_buy_order(trade['Symbol'],  (trade['SIZE'][index],), trade['StopLoss'], takeProfit)
                         
                         
-                # # executes buy limit order
-                # elif(trade['OrderType'] == 'Buy Limit'):
-                #     for takeProfit in trade['TP']:
-                #         result = await connection.create_limit_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                # executes buy limit order
+                elif(trade['OrderType'] == 'Buy Limit'):
+                    for takeProfit in trade['TP']:
+                        result = await connection.create_limit_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
 
-                # # executes buy stop order
-                # elif(trade['OrderType'] == 'Buy Stop'):
-                #     for takeProfit in trade['TP']:
-                #         result = await connection.create_stop_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                # executes buy stop order
+                elif(trade['OrderType'] == 'Buy Stop'):
+                    for takeProfit in trade['TP']:
+                        result = await connection.create_stop_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
 
-                # # executes sell market execution order
-                # elif(trade['OrderType'] == 'Sell'):
-                #     for takeProfit in trade['TP']:
-                #         result = await connection.create_market_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
+                # executes sell market execution order
+                elif(trade['OrderType'] == 'Sell'):
+                    for takeProfit in trade['TP']:
+                        result = await connection.create_market_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
 
-                # # executes sell limit order
-                # elif(trade['OrderType'] == 'Sell Limit'):
-                #     for takeProfit in trade['TP']:
-                #         result = await connection.create_limit_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                # executes sell limit order
+                elif(trade['OrderType'] == 'Sell Limit'):
+                    for takeProfit in trade['TP']:
+                        result = await connection.create_limit_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
 
-                # # executes sell stop order
-                # elif(trade['OrderType'] == 'Sell Stop'):
-                #     for takeProfit in trade['TP']:
-                #         result = await connection.create_stop_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                # executes sell stop order
+                elif(trade['OrderType'] == 'Sell Stop'):
+                    for takeProfit in trade['TP']:
+                        result = await connection.create_stop_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
                 
                 # prints success message to console
-                logger.info('Trade entered successfully! {}\n' .format(trade['SIZE']))
+                logger.info('Trade entered successfully!')
                 
                 logger.info('Result Code: {}\n'.format(result['stringCode']))
             
