@@ -54,8 +54,7 @@ def ParseSignal(signal: str) -> dict:
     signal = [line.rstrip() for line in signal]
 
     trade = {}
-    
-
+        
     # determines the order type of the trade
     if('Buy Limit'.lower() in signal[0].lower()):
         trade['OrderType'] = 'Buy Limit'
@@ -97,21 +96,25 @@ def ParseSignal(signal: str) -> dict:
     
     trade['StopLoss'] = float((signal[3].split())[-1])
     trade['TP'] = [float((signal[4].split())[-2])]
+    trade['SIZE'] = [float((signal[4].split())[-1])]
     #trade['PositionSize'] = [float((signal[4].split())[-1])]
 
     # checks if there's a fourth line and parses it for TP2
     if(len(signal) > 5):
         trade['TP'].append(float(signal[5].split()[-2]))
-        #trade['PositionSize'].append(float((signal[5].split())[-1]))
+        trade['SIZE'].append(float((signal[5].split())[-1]))
+                
     if(len(signal) > 6):
         trade['TP'].append(float(signal[6].split()[-2]))
-        #trade['PositionSize'].append(float((signal[6].split())[-1]))
+        trade['SIZE'].append(float((signal[6].split())[-1]))
+       
     if(len(signal) > 7):
         trade['TP'].append(float(signal[7].split()[-2]))
-        #trade['PositionSize'].append(float((signal[7].split())[-1]))
+        trade['SIZE'].append(float((signal[7].split())[-1]))
+
     if(len(signal) > 8):
         trade['TP'].append(float(signal[8].split()[-2]))
-        #trade['PositionSize'].append(float((signal[8].split())[-1]))
+        trade['SIZE'].append(float((signal[8].split())[-1]))
     
     # adds risk factor to trade
     trade['RiskFactor'] = RISK_FACTOR
@@ -408,6 +411,9 @@ def CalculateTrade(update: Update, context: CallbackContext) -> int:
 
     return DECISION
 
+
+
+
 def unknown_command(update: Update, context: CallbackContext) -> None:
     """Checks if the user is authorized to use this bot or shares to use /help command for instructions.
 
@@ -451,11 +457,11 @@ def help(update: Update, context: CallbackContext) -> None:
     """
 
     help_message = "TONY This bot is for you to automatically enter trades onto your MetaTrader account directly from Telegram. To begin, ensure that you are authorized to use this bot by adjusting your Python script or environment variables.\n\nThis bot supports all trade order types (Market Execution, Limit, and Stop)\n\nAfter an extended period away from the bot, please be sure to re-enter the start command to restart the connection to your MetaTrader account."
-    commands = "List of commands:\n/start : displays welcome message\n/help : displays list of commands and example trades\n/trade : takes in user inputted trade for parsing and placement\n/calculate : calculates trade information for a user inputted trade"
+    commands = "List of commands:\n/start : displays welcome message\n/help : displays list of commands and example trades\n/trade : takes in user inputted trade for parsing and placement\n/calculate : calculates trade information for a user inputted trade\n/closetrade : will close opened trades"
     trade_example = "Example Trades 💴:\n\n"
     market_execution_example = "Market Execution:\nBUY GBPUSD\nEntry NOW\nSL 1.14336\nTP 1.28930\nTP 1.29845\n\n"
     limit_example = "Limit Execution:\nBUY LIMIT GBPUSD\nEntry 1.14480\nSL 1.14336\nTP 1.28930\n\n"
-    note = "You are able to enter up to two take profits. If two are entered, both trades will use half of the position size, and one will use TP1 while the other uses TP2.\n\nNote: Use 'NOW' as the entry to enter a market execution trade."
+    note = "You are able to enter up to six take profits. Trades will use position size/#TP.\n\nNote: Use 'NOW' as the entry to enter a market execution trade."
 
     # sends messages to user
     update.effective_message.reply_text(help_message)
@@ -529,6 +535,16 @@ def Calculation_Command(update: Update, context: CallbackContext) -> int:
 
     return CALCULATE
 
+# def CloseTrade_Command(update:Update, context: CallbackContext) -> int:
+#     """Asks user to enter the trade they would like to close.
+
+#     Arguments:
+#         update: update from Telegram
+#         context: CallbackContext object that stores commonly used objects in handler callbacks
+#     """
+#     # initializes the user's trade as empty prior to input and parsing
+#     context.user_data['trade'] = None
+#        # await connection.get_history_orders_by_ticket('1234567')
 
 def main() -> None:
     """Runs the Telegram bot."""
