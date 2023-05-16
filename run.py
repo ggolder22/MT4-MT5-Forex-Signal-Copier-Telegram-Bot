@@ -453,13 +453,18 @@ def welcome(update: Update, context: CallbackContext) -> None:
     #•welcome_message = "Welcome to the FX Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more from your personalized Python script and environment variables.\n\nUse the /help command to view instructions and example trades."
     welcome_message = "Welcome to Golder Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more.\n\nUse the /help command to view instructions and example trades."
     
-    # agregue esta linea para ver si el bot queda siempre en opcion TRADE
-    context.user_data['trade'] = True
+
 
     # sends messages to user
     update.effective_message.reply_text(welcome_message)
 
-    #AGREGUE EL TRADE AL RETURN PARA VER SI EL BOT QUEDA SIEMPRE EN TRADE
+    
+    return
+
+def start(update: Update, context: CallbackContext) -> int:
+    """Inicia la conversación y establece la opción "trade" como la opción por defecto."""
+    context.user_data['trade'] = True
+    update.effective_message.reply_text("¡Bienvenido! La opción por defecto ha sido establecida en 'trade'.")
     return TRADE
 
 def help(update: Update, context: CallbackContext) -> None:
@@ -576,7 +581,7 @@ def main() -> None:
 
     conv_handler = ConversationHandler(
         #entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
-        entry_points=[CommandHandler('start', welcome)],
+        entry_points=[CommandHandler('start', start)],
         states={
             TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
             CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
