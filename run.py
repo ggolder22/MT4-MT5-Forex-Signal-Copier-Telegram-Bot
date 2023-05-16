@@ -344,7 +344,15 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
         context: CallbackContext object that stores commonly used objects in handler callbacks
     """
 
+    # Verificar si la conversación se está iniciando
+    # if context.user_data.get('trade') is None:
+    #     context.user_data['trade'] = True
+
+    
+    
+    
     # checks if the trade has already been parsed or not
+
     if(context.user_data['trade'] == None):
 
         try: 
@@ -445,11 +453,14 @@ def welcome(update: Update, context: CallbackContext) -> None:
     #•welcome_message = "Welcome to the FX Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more from your personalized Python script and environment variables.\n\nUse the /help command to view instructions and example trades."
     welcome_message = "Welcome to Golder Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more.\n\nUse the /help command to view instructions and example trades."
     
+    # agregue esta linea para ver si el bot queda siempre en opcion TRADE
+    context.user_data['trade'] = True
 
     # sends messages to user
     update.effective_message.reply_text(welcome_message)
 
-    return
+    #AGREGUE EL TRADE AL RETURN PARA VER SI EL BOT QUEDA SIEMPRE EN TRADE
+    return TRADE
 
 def help(update: Update, context: CallbackContext) -> None:
     """Sends a help message when the command /help is issued
@@ -564,7 +575,8 @@ def main() -> None:
     dp.add_handler(CommandHandler("help", help))
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
+        #entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
+        entry_points=[CommandHandler('start', welcome)],
         states={
             TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
             CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
