@@ -287,7 +287,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 # executes buy market execution order
                 if(trade['OrderType'] == 'Buy'):
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] * trade['SIZE'][i], trade['StopLoss'], takeProfit)
+                        result = await connection.create_market_buy_order(trade['Symbol'], abs(round(trade['PositionSize'] * trade['SIZE'][i])), trade['StopLoss'], takeProfit)
        
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
