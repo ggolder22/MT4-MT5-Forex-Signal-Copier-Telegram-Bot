@@ -364,7 +364,7 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
         message = update.message.text
         
         # Verificar si el mensaje es una señal de trading
-        if message.startswith("Signal"):
+        if message.startswith("BUY"):
             # Parsear la señal de trading
             trade = ParseSignal(message)
             
