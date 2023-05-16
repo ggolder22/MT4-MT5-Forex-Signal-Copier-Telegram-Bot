@@ -293,27 +293,27 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_limit_buy_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await connection.create_limit_buy_order(trade['Symbol'], round(trade['PositionSize'] * trade['SIZE'][i],2), trade['Entry'], trade['StopLoss'], takeProfit)
 
                 # executes buy stop order
                 elif(trade['OrderType'] == 'Buy Stop'):
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_stop_buy_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await connection.create_stop_buy_order(trade['Symbol'], round(trade['PositionSize'] * trade['SIZE'][i],2), trade['Entry'], trade['StopLoss'], takeProfit)
 
                 # executes sell market execution order
                 elif(trade['OrderType'] == 'Sell'):
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_market_sell_order(trade['Symbol'], trade['SIZE'][i], trade['StopLoss'], takeProfit)
+                        result = await connection.create_market_sell_order(trade['Symbol'], round(trade['PositionSize'] * trade['SIZE'][i],2), trade['StopLoss'], takeProfit)
 
                 # executes sell limit order
                 elif(trade['OrderType'] == 'Sell Limit'):
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_limit_sell_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await connection.create_limit_sell_order(trade['Symbol'], round(trade['PositionSize'] * trade['SIZE'][i],2), trade['Entry'], trade['StopLoss'], takeProfit)
 
                 # executes sell stop order
                 elif(trade['OrderType'] == 'Sell Stop'):
                     for i, takeProfit in enumerate(trade['TP']):
-                        result = await connection.create_stop_sell_order(trade['Symbol'], trade['SIZE'][i], trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await connection.create_stop_sell_order(trade['Symbol'], round(trade['PositionSize'] * trade['SIZE'][i],2), trade['Entry'], trade['StopLoss'], takeProfit)
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
@@ -450,7 +450,7 @@ def welcome(update: Update, context: CallbackContext) -> None:
     """
 
     #•welcome_message = "Welcome to the FX Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more from your personalized Python script and environment variables.\n\nUse the /help command to view instructions and example trades."
-    welcome_message = "Welcome to Golder Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more.\n\nUse the /help command to view instructions and example trades."
+    welcome_message = "Welcome to Fornix! \n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. \n\nUse the /help command to view instructions and example trades."
     
 
 
@@ -528,9 +528,7 @@ def Trade_Command(update: Update, context: CallbackContext) -> int:
 
     return TRADE
 
-def echo(update: Update, context: ContextTypes.DEFAULT_TYPE): 
-    update.effective_message.reply_text(chat_id=update.effective_chat.id, text=update.message.text)
-    return
+
 
 def Calculation_Command(update: Update, context: CallbackContext) -> int:
     """Asks user to enter the trade they would like to calculate trade information for.
@@ -551,16 +549,6 @@ def Calculation_Command(update: Update, context: CallbackContext) -> int:
 
     return CALCULATE
 
-# def CloseTrade_Command(update:Update, context: CallbackContext) -> int:
-#     """Asks user to enter the trade they would like to close.
-
-#     Arguments:
-#         update: update from Telegram
-#         context: CallbackContext object that stores commonly used objects in handler callbacks
-#     """
-#     # initializes the user's trade as empty prior to input and parsing
-#     context.user_data['trade'] = None
-#        # await connection.get_history_orders_by_ticket('1234567')
 
 def main() -> None:
     """Runs the Telegram bot."""
@@ -590,7 +578,7 @@ def main() -> None:
     dp.add_handler(conv_handler)
 
     # message handler for all messages that are not included in conversation handler
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    dp.add_handler(MessageHandler(Filters.text, unknown_command))
 
     # log all errors
     dp.add_error_handler(error)
