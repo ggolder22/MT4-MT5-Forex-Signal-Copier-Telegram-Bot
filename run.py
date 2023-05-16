@@ -7,7 +7,7 @@ import os
 from metaapi_cloud_sdk import MetaApi
 from prettytable import PrettyTable
 from telegram import ParseMode, Update
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater, ConversationHandler, CallbackContext
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater, ConversationHandler, CallbackContext, ContextTypes
 
 # MetaAPI Credentials
 API_KEY = os.environ.get("API_KEY")
@@ -528,6 +528,10 @@ def Trade_Command(update: Update, context: CallbackContext) -> int:
 
     return TRADE
 
+def echo(update: Update, context: ContextTypes.DEFAULT_TYPE): 
+    update.effective_message.reply_text(chat_id=update.effective_chat.id, text=update.message.text)
+    return
+
 def Calculation_Command(update: Update, context: CallbackContext) -> int:
     """Asks user to enter the trade they would like to calculate trade information for.
 
@@ -586,7 +590,7 @@ def main() -> None:
     dp.add_handler(conv_handler)
 
     # message handler for all messages that are not included in conversation handler
-    dp.add_handler(MessageHandler(Filters.text, unknown_command))
+    dp.add_handler(MessageHandler(Filters.text, echo))
 
     # log all errors
     dp.add_error_handler(error)
