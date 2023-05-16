@@ -282,10 +282,8 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
         GetTradeInformation(update, trade, account_information['balance'])
             
         # checks if the user has indicated to enter trade
-        #if(enterTrade == True):
-        if(trade['OrderType'] == "BUY"):
-
-
+        if(enterTrade == True):
+        
             # enters trade on to MetaTrader account
             update.effective_message.reply_text("Entering trade on MetaTrader Account ... 👨🏾‍💻")
 
@@ -358,29 +356,51 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
     # checks if the trade has already been parsed or not
 
     if(context.user_data['trade'] == None):
-
-        try: 
-            # parses signal from Telegram message
-            trade = ParseSignal(update.effective_message.text)
-            
-            # checks if there was an issue with parsing the trade
-            if(not(trade)):
-                raise Exception('Invalid Trade')
-
-            # sets the user context trade equal to the parsed trade
-            context.user_data['trade'] = trade
-            update.effective_message.reply_text("Trade Successfully Parsed! 🥳\nConnecting to MetaTrader ... \n(May take a while) ⏰")
+        context.user_data['trade'] = True
+        update.effective_message.reply_text("A Ganar")
+    
+    else:
+        # Obtener el mensaje recibido
+        message = update.message.text
         
-        except Exception as error:
-            logger.error(f'Error: {error}')
-            errorMessage = f"There was an error parsing this trade 😕\n\nError: {error}\n\nPlease re-enter trade with this format:\n\nBUY/SELL SYMBOL\nEntry \nSL \nTP \n\nOr use the /cancel to command to cancel this action."
-            update.effective_message.reply_text(errorMessage)
+        # Verificar si el mensaje es una señal de trading
+        if message.startswith("Signal"):
+            # Parsear la señal de trading
+            trade = ParseSignal(message)
+            
+            # Verificar si la señal es válida
+            if trade:
+                                
+                # Ejecutar la función para colocar el trade en MetaTrader account
+                asyncio.run(ConnectMetaTrader(update, context.user_data['trade'], True))
+            else:
+                update.effective_message.reply_text("Señal de trading inválida. Por favor, verifica la información.")
+        else:
+            update.effective_message.reply_text("No se reconoce el mensaje como una señal de trading válida.")
+    
+    
+        # try: 
+        #     # parses signal from Telegram message
+        #     trade = ParseSignal(update.effective_message.text)
+            
+        #     # checks if there was an issue with parsing the trade
+        #     if(not(trade)):
+        #         raise Exception('Invalid Trade')
 
-            # returns to TRADE state to reattempt trade parsing
+        #     # sets the user context trade equal to the parsed trade
+        #     context.user_data['trade'] = trade
+        #     update.effective_message.reply_text("Trade Successfully Parsed! 🥳\nConnecting to MetaTrader ... \n(May take a while) ⏰")
+        
+        # except Exception as error:
+        #     logger.error(f'Error: {error}')
+        #     errorMessage = f"There was an error parsing this trade 😕\n\nError: {error}\n\nPlease re-enter trade with this format:\n\nBUY/SELL SYMBOL\nEntry \nSL \nTP \n\nOr use the /cancel to command to cancel this action."
+        #     update.effective_message.reply_text(errorMessage)
+
+        #     # returns to TRADE state to reattempt trade parsing
             return TRADE
     
     # attempts connection to MetaTrader and places trade
-    asyncio.run(ConnectMetaTrader(update, context.user_data['trade'], True))
+    #asyncio.run(ConnectMetaTrader(update, context.user_data['trade'], True))
     
     # removes trade from user context data
     context.user_data['trade'] = None
@@ -572,23 +592,33 @@ def main() -> None:
     dp = updater.dispatcher
 
     # message handler
-    dp.add_handler(CommandHandler("start", welcome))
+    #dp.add_handler(CommandHandler("start", welcome))
+    start_handler = CommandHandler('start', welcome)
+    dp.add_handler(start_handler)
 
     # help command handler
     dp.add_handler(CommandHandler("help", help))
 
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
-        states={
-            TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
-            CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
-            DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)]
-        },
-        fallbacks=[CommandHandler("cancel", cancel)],
-    )
+    # conv_handler = ConversationHandler(
+    #     entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
+    #     states={
+    #         TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
+    #         CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
+    #         DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)]
+    #     },
+    #     fallbacks=[CommandHandler("cancel", cancel)],
+    #)
+
+    place_trade_handler = ConversationHandler(
+    entry_points=[MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
+    states={},
+    fallbacks=[]
+)
+    dp.add_handler(place_trade_handler)
+
 
     # conversation handler for entering trade or calculating trade information
-    dp.add_handler(conv_handler)
+    #dp.add_handler(conv_handler)
 
     # message handler for all messages that are not included in conversation handler
     dp.add_handler(MessageHandler(Filters.text, unknown_command))
@@ -597,6 +627,7 @@ def main() -> None:
     dp.add_error_handler(error)
     
     # listens for incoming updates from Telegram
+    updater.start_polling()
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=APP_URL + TOKEN)
     updater.idle()
 
