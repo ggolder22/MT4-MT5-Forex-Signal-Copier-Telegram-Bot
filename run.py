@@ -193,7 +193,7 @@ def CreateTable(trade: dict, balance: float, stopLossPips: int, takeProfitPips: 
     #creates prettytable object
     table = PrettyTable()
     
-    table.title = trade["ger"]
+    table.title = "Trade Information"
     table.field_names = ["Key", "Value"]
     table.align["Key"] = "l"  
     table.align["Value"] = "l" 
@@ -282,7 +282,9 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
         GetTradeInformation(update, trade, account_information['balance'])
             
         # checks if the user has indicated to enter trade
-        if(enterTrade == True):
+        #if(enterTrade == True):
+        if(trade['OrderType'] == "BUY"):
+
 
             # enters trade on to MetaTrader account
             update.effective_message.reply_text("Entering trade on MetaTrader Account ... 👨🏾‍💻")
