@@ -54,6 +54,7 @@ def ParseSignal(signal: str) -> dict:
     signal = [line.rstrip() for line in signal]
 
     trade = {}
+    ger = "nada"
         
     # determines the order type of the trade
     if('Buy Limit'.lower() in signal[0].lower()):
@@ -123,6 +124,9 @@ def ParseSignal(signal: str) -> dict:
         trade['TP'].append(float(signal[9].split()[-2]))
         trade['SIZE'].append(float((signal[9].split())[-1]))
 
+    if(len(signal)>10):
+        trade["ger"] = signal[10]    
+
     # adds risk factor to trade
     #trade['RiskFactor'] = RISK_FACTOR
     # modifico el RiskFactor para introducirlo por mensaje desde la señal
@@ -189,7 +193,7 @@ def CreateTable(trade: dict, balance: float, stopLossPips: int, takeProfitPips: 
     #creates prettytable object
     table = PrettyTable()
     
-    table.title = "Trade Information"
+    table.title = trade["ger"]
     table.field_names = ["Key", "Value"]
     table.align["Key"] = "l"  
     table.align["Value"] = "l" 
@@ -318,7 +322,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 update.effective_message.reply_text("Trade entered successfully! 💰")
                 
                 # prints success message to console
-                logger.info('Trade entered successfully!')
+                logger.info("Trade entered successfully!")
                 
                 logger.info('Result Code: {}\n'.format(result['stringCode']))
             
@@ -347,10 +351,8 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
     # Verificar si la conversación se está iniciando
     # if context.user_data.get('trade') is None:
     #     context.user_data['trade'] = True
-
-    
-    
-    
+       
+   
     # checks if the trade has already been parsed or not
 
     if(context.user_data['trade'] == None):
@@ -460,12 +462,6 @@ def welcome(update: Update, context: CallbackContext) -> None:
 
     
     return
-
-def start(update: Update, context: CallbackContext) -> int:
-    """Inicia la conversación y establece la opción "trade" como la opción por defecto."""
-    context.user_data['trade'] = True
-    update.effective_message.reply_text("¡Bienvenido! La opción por defecto ha sido establecida en 'trade'.")
-    return TRADE
 
 def help(update: Update, context: CallbackContext) -> None:
     """Sends a help message when the command /help is issued
@@ -580,8 +576,7 @@ def main() -> None:
     dp.add_handler(CommandHandler("help", help))
 
     conv_handler = ConversationHandler(
-        #entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
         states={
             TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
             CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
