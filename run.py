@@ -380,6 +380,7 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
     # removes trade from user context data
     context.user_data['trade'] = None
 
+    #return ConversationHandler.END -> ELimine el ConversationHandler.END y deje solo el return, para probar si me deja parsear todas alerta que yo quiera
     return 
 
 def CalculateTrade(update: Update, context: CallbackContext) -> int:
