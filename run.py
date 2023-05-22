@@ -380,7 +380,7 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
     # removes trade from user context data
     context.user_data['trade'] = None
 
-    return ConversationHandler.END
+    return 
 
 def CalculateTrade(update: Update, context: CallbackContext) -> int:
     """Parses trade and places on MetaTrader account.   
@@ -421,9 +421,6 @@ def CalculateTrade(update: Update, context: CallbackContext) -> int:
 
     return DECISION
 
-
-
-
 def unknown_command(update: Update, context: CallbackContext) -> None:
     """Checks if the user is authorized to use this bot or shares to use /help command for instructions.
 
@@ -438,7 +435,6 @@ def unknown_command(update: Update, context: CallbackContext) -> None:
     update.effective_message.reply_text("Unknown command. Use /trade to place a trade or /calculate to find information for a trade. You can also use the /help command to view instructions for this bot.")
 
     return
-
 
 # Command Handlers
 def welcome(update: Update, context: CallbackContext) -> None:
