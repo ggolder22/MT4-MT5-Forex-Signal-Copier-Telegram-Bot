@@ -130,9 +130,7 @@ def ParseSignal(signal: str) -> dict:
     trade['RiskFactor'] = float((signal[1].split())[-1])
 
     return trade
-    
-
-
+   
 def GetTradeInformation(update: Update, trade: dict, balance: float) -> None:
     """Calculates information from given trade including stop loss and take profit in pips, posiition size, and potential loss/profit.
 
@@ -263,6 +261,8 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
 
         update.effective_message.reply_text("Successfully connected to MetaTrader!\nCalculating trade risk ... 🤔")
 
+        open_positions = await connection.get_position()
+
         # checks if the order is a market execution to get the current price of symbol
         if(trade['Entry'] == 'NOW'):
             price = await connection.get_symbol_price(symbol=trade['Symbol'])
@@ -334,7 +334,6 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
   
 
     return
-
 
 # Handler Functions
 def PlaceTrade(update: Update, context: CallbackContext) -> int:
@@ -419,6 +418,9 @@ def CalculateTrade(update: Update, context: CallbackContext) -> int:
 
     # asks if user if they would like to enter or decline trade
     update.effective_message.reply_text("Would you like to enter this trade?\nTo enter, select: /yes\nTo decline, select: /no")
+    #update.effective_message.reply_markup:{'keyboard': [[{'text': 'supa'}, {'text': 'mario'}]]}
+    
+    
 
     return DECISION
 
@@ -437,6 +439,29 @@ def unknown_command(update: Update, context: CallbackContext) -> None:
 
     return
 
+# def CancelTrade(update:Update, context: CallbackContext) -> int:
+#     """Cancels the current trade.
+#     Arguments:
+#         update: update trads from metatrader
+        
+
+#     Returns:
+#         A coroutine that confirms that the connection to MetaAPI/MetaTrader and trade placement were successful
+    
+#     """
+#     # obtains open positions from MetaTrader server
+#     positions = asyncio.run(get_Positions(update, context.user_data['trade']))
+#     # if positions is empty, return to CALCULATE
+#     if positions is None:
+#         return CALCULATE
+#     # if positions is not empty, cancel positions
+#     else:
+#         # cancels positions
+#         asyncio.run(CancelPositions(update, context.user_data['trade'], positions))
+
+#     return
+
+
 # Command Handlers
 def welcome(update: Update, context: CallbackContext) -> None:
     """Sends welcome message to user.
@@ -447,7 +472,7 @@ def welcome(update: Update, context: CallbackContext) -> None:
     """
 
     #•welcome_message = "Welcome to the FX Signal Copier Telegram Bot! 💻💸\n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. You are able to change specific settings such as allowed symbols, risk factor, and more from your personalized Python script and environment variables.\n\nUse the /help command to view instructions and example trades."
-    welcome_message = "Welcome to Fornix! \n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. \n\nUse the /help command to view instructions and example trades."
+    welcome_message = "Welcome to CashFlowy FX! \n\nYou can use this bot to enter trades directly from Telegram and get a detailed look at your risk to reward ratio with profit, loss, and calculated lot size. \n\nUse the /help command to view instructions and example trades."
     
 
 
@@ -465,11 +490,12 @@ def help(update: Update, context: CallbackContext) -> None:
         context: CallbackContext object that stores commonly used objects in handler callbacks
     """
 
-    help_message = "TONY This bot is for you to automatically enter trades onto your MetaTrader account directly from Telegram. To begin, ensure that you are authorized to use this bot by adjusting your Python script or environment variables.\n\nThis bot supports all trade order types (Market Execution, Limit, and Stop)\n\nAfter an extended period away from the bot, please be sure to re-enter the start command to restart the connection to your MetaTrader account."
+    #help_message = "CashFlowy FX This bot is for you to automatically enter trades onto your MetaTrader account directly from Telegram. To begin, ensure that you are authorized to use this bot by adjusting your Python script or environment variables.\n\nThis bot supports all trade order types (Market Execution, Limit, and Stop)\n\nAfter an extended period away from the bot, please be sure to re-enter the start command to restart the connection to your MetaTrader account."
+    help_message = "CashFlowy FX bot is for you to automatically enter trades onto your MetaTrader account directly from Telegram.\n\nThis bot supports all trade order types (Market Execution, Limit, and Stop)"
     commands = "List of commands:\n/start : displays welcome message\n/help : displays list of commands and example trades\n/trade : takes in user inputted trade for parsing and placement\n/calculate : calculates trade information for a user inputted trade\n/closetrade : will close opened trades"
     trade_example = "Example Trades 💴:\n\n"
-    market_execution_example = "Market Execution:\nBUY GBPUSD\nEntry NOW\nSL 1.14336\nTP 1.28930\nTP 1.29845\n\n"
-    limit_example = "Limit Execution:\nBUY LIMIT GBPUSD\nEntry 1.14480\nSL 1.14336\nTP 1.28930\n\n"
+    market_execution_example = "Market Execution:\nBUY GBPUSD\nRF 0.01\nEntry NOW\nSL 1.14336\nTP1 1.28930 0.5\nTP2 1.29845 0.05\nTP3 1.3 0.05\nTP4 1.312 0.05\nTP5 1.325 0.05\TP6 1.33 0.05\n\n"
+    limit_example = "Limit Execution:\nBUY LIMIT GBPUSD\nRF 0.01\nEntry 1.14480\nSL 1.14336\nTP1 1.28930 0.5\nTP2 1.29845 0.05\nTP3 1.3 0.05\nTP4 1.312 0.05\nTP5 1.325 0.05\TP6 1.33 0.05\n\n"
     note = "You are able to enter up to six take profits. Trades will use position size/#TP.\n\nNote: Use 'NOW' as the entry to enter a market execution trade."
 
     # sends messages to user
@@ -525,8 +551,6 @@ def Trade_Command(update: Update, context: CallbackContext) -> int:
 
     return TRADE
 
-
-
 def Calculation_Command(update: Update, context: CallbackContext) -> int:
     """Asks user to enter the trade they would like to calculate trade information for.
 
@@ -545,7 +569,6 @@ def Calculation_Command(update: Update, context: CallbackContext) -> int:
     update.effective_message.reply_text("Please enter the trade that you would like to calculate.")
 
     return CALCULATE
-
 
 def main() -> None:
     """Runs the Telegram bot."""
@@ -582,7 +605,7 @@ def main() -> None:
     
     # listens for incoming updates from Telegram
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=APP_URL + TOKEN)
-    updater.idle()
+    #updater.idle()
 
     return
 
