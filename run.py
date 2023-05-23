@@ -380,10 +380,7 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
     context.user_data['trade'] = None
 
     #return ConversationHandler.END -> ELimine el ConversationHandler.END y deje solo el return, para probar si me deja parsear todas alerta que yo quiera
-    if stop: 
-        return ConversationHandler.END
-    else:
-        return 
+    return 
 
 def CalculateTrade(update: Update, context: CallbackContext) -> int:
     """Parses trade and places on MetaTrader account.   
