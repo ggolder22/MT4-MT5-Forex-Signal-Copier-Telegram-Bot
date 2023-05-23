@@ -520,6 +520,21 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
     return ConversationHandler.END
 
+def stop(update: Update, context: CallbackContext) -> int:
+    """Cancels and ends the conversation.   
+    
+    Arguments:
+        update: update from Telegram
+        context: CallbackContext object that stores commonly used objects in handler callbacks
+    """
+
+    update.effective_message.reply_text("Auto Trading has been stopped.")
+
+    # removes trade from user context data
+    context.user_data['trade'] = None
+    
+    return ConversationHandler.END
+
 def error(update: Update, context: CallbackContext) -> None:
     """Logs Errors caused by updates.
 
@@ -594,7 +609,7 @@ def main() -> None:
             TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
             CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
             DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)],
-            STOP: [CommandHandler("stop", updater.idle())]
+            STOP: [CommandHandler("stop", stop)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
@@ -610,7 +625,9 @@ def main() -> None:
     
     # listens for incoming updates from Telegram
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=APP_URL + TOKEN)
-    #updater.idle()
+    
+    if stop:
+        updater.idle()
 
     return
 
