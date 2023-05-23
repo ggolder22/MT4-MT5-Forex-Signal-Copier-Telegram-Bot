@@ -380,7 +380,10 @@ def PlaceTrade(update: Update, context: CallbackContext) -> int:
     context.user_data['trade'] = None
 
     #return ConversationHandler.END -> ELimine el ConversationHandler.END y deje solo el return, para probar si me deja parsear todas alerta que yo quiera
-    return 
+    if stop: 
+        return ConversationHandler.END
+    else:
+        return 
 
 def CalculateTrade(update: Update, context: CallbackContext) -> int:
     """Parses trade and places on MetaTrader account.   
@@ -588,8 +591,8 @@ def Calculation_Command(update: Update, context: CallbackContext) -> int:
 def main() -> None:
     """Runs the Telegram bot."""
 
-    #updater = Updater(TOKEN, use_context=True)
-    updater = Updater(TOKEN)
+    updater = Updater(TOKEN, use_context=True)
+    
 
     # get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -611,7 +614,7 @@ def main() -> None:
             DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)],
             STOP: [CommandHandler("stop", stop)]
         },
-        fallbacks=[CommandHandler("cancel", cancel), CommandHandler("stop", stop)],
+        fallbacks=[CommandHandler("cancel", cancel)],
     )
 
     # conversation handler for entering trade or calculating trade information
@@ -625,9 +628,7 @@ def main() -> None:
     
     # listens for incoming updates from Telegram
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=APP_URL + TOKEN)
-    
-    if stop:
-        updater.idle()
+    #updater.idle()
 
     return
 
