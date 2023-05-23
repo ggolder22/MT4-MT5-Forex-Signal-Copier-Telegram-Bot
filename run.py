@@ -611,7 +611,7 @@ def main() -> None:
             DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)],
             STOP: [CommandHandler("stop", stop)]
         },
-        fallbacks=[CommandHandler("cancel", cancel)],
+        fallbacks=[CommandHandler("cancel", cancel), CommandHandler("stop", stop)],
     )
 
     # conversation handler for entering trade or calculating trade information
