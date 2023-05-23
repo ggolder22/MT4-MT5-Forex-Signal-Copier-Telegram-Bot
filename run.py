@@ -601,7 +601,7 @@ def main() -> None:
     dp.add_handler(CommandHandler("help", help))
 
     # stop auto trade
-    dp.add_handler(CommandHandler("stop", cancel))
+    dp.add_handler(CommandHandler("stop", stop))
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command), CommandHandler("stop", cancel)],
