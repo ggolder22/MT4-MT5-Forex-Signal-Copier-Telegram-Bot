@@ -29,7 +29,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # possibles states for conversation handler
-CALCULATE, TRADE, DECISION = range(3)
+CALCULATE, TRADE, DECISION, STOP = range(4)
 
 # allowed FX symbols
 SYMBOLS = ['AUDCAD', 'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 'CADCHF', 'CADJPY', 'CHFJPY', 'EURAUD', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURNZD', 'EURUSD', 'GBPAUD', 'GBPCAD', 'GBPCHF', 'GBPJPY', 'GBPNZD', 'GBPUSD', 'NOW', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'XAGUSD', 'XAUUSD', "BTCUSD"]
@@ -585,12 +585,16 @@ def main() -> None:
     # help command handler
     dp.add_handler(CommandHandler("help", help))
 
+    # stop auto trade
+    dp.add_handler(CommandHandler("stop", cancel))
+
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command)],
+        entry_points=[CommandHandler("trade", Trade_Command), CommandHandler("calculate", Calculation_Command), CommandHandler("stop", cancel)],
         states={
             TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
             CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
-            DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)]
+            DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)],
+            STOP: [CommandHandler("stop", cancel)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
