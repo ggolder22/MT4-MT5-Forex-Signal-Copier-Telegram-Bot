@@ -594,7 +594,7 @@ def main() -> None:
             TRADE: [MessageHandler(Filters.text & ~Filters.command, PlaceTrade)],
             CALCULATE: [MessageHandler(Filters.text & ~Filters.command, CalculateTrade)],
             DECISION: [CommandHandler("yes", PlaceTrade), CommandHandler("no", cancel)],
-            STOP: [CommandHandler("stop", cancel)]
+            STOP: [CommandHandler("stop", updater.idle())]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
