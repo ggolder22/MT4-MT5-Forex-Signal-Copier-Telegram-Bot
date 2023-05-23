@@ -261,7 +261,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
 
         update.effective_message.reply_text("Successfully connected to MetaTrader!\nCalculating trade risk ... 🤔")
 
-        open_positions = await connection.get_position()
+        #open_positions = await connection.get_position()
 
         # checks if the order is a market execution to get the current price of symbol
         if(trade['Entry'] == 'NOW'):
